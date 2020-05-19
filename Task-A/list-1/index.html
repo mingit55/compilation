@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box {
+            width: 200px;
+            font-size: 1em;
+            line-height: 1.5em;
+            background-color: #eee;
+            border: 1px solid #ddd;
+            margin: 10px 0 20px;
+        }
+
+        #one-line .box {
+            height: 1.5em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #multi-line .box {
+            height: calc(1.5em * 5);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 5; /* 원하는 줄 개수 */
+            -webkit-box-orient: vertical;
+        }
+    </style>
+</head>
+<body>
+    <div id="one-line">
+        <b>한줄만 보여주고 숨기기</b>
+        <div class="box">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsum, harum fuga aliquid, animi reiciendis error, commodi est nobis minima fugit perferendis labore rem quod sint alias ad sit. Deleniti, eius.</div>
+    </div>
+    <div id="multi-line">
+        <b>여러줄 보여주고 숨기기</b>
+        <div class="box">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsum, harum fuga aliquid, animi reiciendis error, commodi est nobis minima fugit perferendis labore rem quod sint alias ad sit. Deleniti, eius.</div>
+    </div>
+</body>
+</html>
