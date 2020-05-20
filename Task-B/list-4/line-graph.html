@@ -11,11 +11,11 @@
     <script>
         window.onload = () => {
             const data = [
-                ["데이터 A", 50],
-                ["데이터 B", 80],
-                ["데이터 C", 120],
-                ["데이터 D", 20],
-                ["데이터 E", 100],
+                ["데이터 A", 54],
+                ["데이터 B", 82],
+                ["데이터 C", 123],
+                ["데이터 D", 21],
+                ["데이터 E", 108],
             ];
 
             const colors = ["#f88", "#ff8", "#8f8", "#8ff", "#88f"];
@@ -64,6 +64,77 @@
             }
 
             function drawGraph(){
+                let {width, height} = canvas;
+                let graphWidth = width - padding * 2;
+                let graphHeight = height - padding * 3 - (fontSize * lineHeight * data.length);
+
+                let innerPadding = 50;
+                let innerWidth = graphWidth - innerPadding;
+                let innerHeight = graphHeight - innerPadding;
+                
+
+                let cntList = data.map(x => x[1]);
+                let max = Math.max(...cntList);
+                let min = Math.min(...cntList);
+
+                const gap = innerWidth / (data.length + 1);
+
+                // 테두리 그리기
+                ctx.strokeStyle = "#ccc";
+                ctx.strokeRect(padding + innerPadding, padding, innerWidth, innerHeight);
+                ctx.strokeStyle = "#333";
+                ctx.beginPath();
+                ctx.lineTo(padding + innerPadding, padding);
+                ctx.lineTo(padding + innerPadding, padding + innerHeight);
+                ctx.lineTo(padding + innerPadding + innerWidth, padding + innerHeight);
+                ctx.stroke();
+
+                // 선 그리기
+                ctx.beginPath();
+                ctx.strokeStyle = "#aaa";
+                data.forEach((item, i) => {
+                    let [key, cnt] = item;
+                    let dotHeight = innerHeight * cnt / max;
+                    let dotX = padding + innerPadding + gap * (i + 1);
+                    let dotY = padding + innerHeight - dotHeight;
+                    ctx.lineTo(dotX, dotY);
+                });
+                ctx.stroke();
+
+
+                data.forEach((item, i) => {
+                    let [key, cnt] = item;
+                    let dotHeight = innerHeight * cnt / max;
+                    let dotX = padding + innerPadding + gap * (i + 1);
+                    let dotY = padding + innerHeight - dotHeight;
+
+                    // 점 그리기
+                    ctx.fillStyle = colors[i];
+                    ctx.beginPath();
+                    ctx.arc(dotX, dotY, 3, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // 라벨 그리기
+                    let width = ctx.measureText(key).width;
+                    ctx.fillStyle = "#333";
+                    ctx.fillText(key, dotX - width / 2, dotY + dotHeight + 15);
+                });
+
+                let maxUnit =  Math.ceil(max / 10) * 10;
+                let minUnit =  Math.floor(min / 10) * 10;
+                let unitCnt = 4;
+                let unit = (maxUnit - minUnit) / unitCnt;
+                let unitPixel = innerHeight / unitCnt;
+
+                for(let i = 0; i <= unitCnt; i ++){
+                    let cunit = unit * i + minUnit;
+                    let Y = padding + innerHeight - unitPixel * i;
+                    let X = padding + innerPadding - ctx.measureText(cunit).width - 10;
+                    
+                    ctx.fillStyle = "#333";
+                    ctx.fillText(cunit, X, Y);
+                }
+                
                 
             }
 
