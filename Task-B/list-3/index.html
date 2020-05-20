@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="root">
+        <div>
+            <b>네비게이션 영역</b>
+            <div id="nav">
+                <ul>
+                    <li>
+                        <a href="#" data-href="plan" class="nav-item">기획부 페이지</a>
+                    </li>
+                    <li>
+                        <a href="#" data-href="design" class="nav-item">디자인부 페이지</a>
+                    </li>
+                    <li>
+                        <a href="#" data-href="develop" class="nav-item">개발부 페이지</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <b>콘텐츠 영역</b>
+            <div id="contents"></div>
+        </div>
+    </div>
+    <script>
+        class Application {
+            pageList = ["plan", "design", "develop"];
+
+            constructor({root, contents, nav}){
+                this.root = document.querySelector(root);
+                this.contents = document.querySelector(contents);
+                this.nav = document.querySelector(nav);
+
+                let queries = this.getQueryData();
+                this.page = queries.page && this.pageList.includes(queries.page) ? queries.page : "plan";
+
+                this.setEvents();
+                this.update();
+            }
+
+            async update(){
+                let html = await this.getPageHTML();
+                this.contents.innerHTML = html;
+            }
+
+            setEvents(){
+                this.nav.querySelectorAll("a").forEach(a => {
+                    a.addEventListener("click", e => {
+                        e.preventDefault();
+                        let href = a.dataset.href;
+
+                        /**
+                          * pushState를 통해 state 값을 줌과 동시에 현재 URL을 변경한다.
+                          * =>  새로 고침시에는 바뀐 URL로 새로운 데이터를 로드할 수 있고,
+                          *     뒤로가기 시에는 window.onpopstate 이벤트를 통해 페이지를 로드할 수 있다.
+                          */
+                        this.page = this.pageList.includes(href) ? href : this.page;
+                        history.pushState({page: this.page}, null, "./index.html?page=" + this.page);
+
+                        this.update();
+                    });
+                });
+
+                // * popstate는 사용자가 '뒤로가기' 등의 세션 탐색 행동을 취할 때 발생한다.
+                // - Event 객체에는 state라는 속성이 생기는데, 이는 세션 탐색 이전에 'pushState' 혹은 'replaceState'를 사용할 시 생긴다.
+                window.addEventListener("popstate", e => {
+                    this.page = this.pageList.includes(e.state.page) ? e.state.page : this.page;
+                    this.update();
+                });
+            }
+
+            getQueryData(){
+                let search = location.search;
+                let result = /\??(?<key>[^&=]+)=(?<value>[^&=]+)/.exec(search);
+                let queries = {};
+
+                while(result){
+                    let matches = result[0];
+                    let {key, value} = result.groups;
+                    queries[key] = value;
+
+                    search = search.slice(matches.length);
+                    result = /\??(?<key>[^&=]+)=(?<value>[^&=]+)/.exec(search)
+                }
+                
+                return queries;
+            }
+            
+            getPageHTML(){
+                return fetch(`./${this.page}.html`)
+                    .then(res => res.text());
+            }
+        }
+
+        window.onload = () => {
+            let app = new Application({root: "#root", contents: "#contents", nav: "#nav"});
+
+        };
+    </script>
+</body>
+</html>
