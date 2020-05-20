@@ -64,6 +64,62 @@
             }
 
             function drawGraph(){
+                let {width, height} = canvas;
+                let graphWidth = width - padding * 2;
+                let graphHeight = height - padding * 3 - (fontSize * lineHeight * data.length);
+
+                let innerPadding = 50;
+                let innerWidth = graphWidth - innerPadding;
+                let innerHeight = graphHeight - innerPadding;
+                
+
+                let cntList = data.map(x => x[1]);
+                let max = Math.max(...cntList);
+                let min = Math.min(...cntList);
+
+                const barWidth = 30;
+                const gap = (innerWidth - (barWidth * data.length)) / (data.length + 1);
+
+                data.forEach((item, i) => {
+                    let [key, cnt] = item;
+                    let barHeight = innerHeight * cnt / max;
+                    let barX = padding + innerPadding + gap * (i + 1) + barWidth * i;
+                    let barY = padding + innerHeight - barHeight;
+
+                    // 막대 그리기
+                    ctx.fillStyle = colors[i];
+                    ctx.fillRect(barX, barY, barWidth, barHeight);
+
+                    // 라벨 그리기
+                    let width = ctx.measureText(key).width;
+                    ctx.fillStyle = "#333";
+                    ctx.fillText(key, barX + barWidth / 2 - width / 2, barY + barHeight + 15);
+                });
+
+
+                ctx.strokeStyle = "#ccc";
+                ctx.strokeRect(padding + innerPadding, padding, innerWidth, innerHeight);
+                ctx.strokeStyle = "#333";
+                ctx.beginPath();
+                ctx.lineTo(padding + innerPadding, padding);
+                ctx.lineTo(padding + innerPadding, padding + innerHeight);
+                ctx.lineTo(padding + innerPadding + innerWidth, padding + innerHeight);
+                ctx.stroke();
+
+                let maxUnit =  Math.ceil(max / 10) * 10;
+                let minUnit =  Math.floor(min / 10) * 10;
+                let unitCnt = 4;
+                let unit = (maxUnit - minUnit) / unitCnt;
+                let unitPixel = innerHeight / unitCnt;
+
+                for(let i = 0; i <= unitCnt; i ++){
+                    let cunit = unit * i + minUnit;
+                    let Y = padding + innerHeight - unitPixel * i;
+                    let X = padding + innerPadding - ctx.measureText(cunit).width - 10;
+                    
+                    ctx.fillStyle = "#333";
+                    ctx.fillText(cunit, X, Y);
+                }
                 
                 
             }
