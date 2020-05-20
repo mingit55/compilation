@@ -28,14 +28,11 @@
 
         .area {
             overflow: hidden;
-
-            /* 슬라이드 개수 표시 */
-            counter-reset: slide-cnt;
         }
 
-        .image:nth-child(1) { background-color: #f55; }
-        .image:nth-child(2) { background-color: #5f5; }
-        .image:nth-child(3) { background-color: #55f; }
+        .image-1 { background-color: #f55; }
+        .image-2 { background-color: #5f5; }
+        .image-3 { background-color: #55f; }
 
         /* 슬라이드 개수 표시 */
         .image::before {
@@ -43,11 +40,12 @@
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
-            content: counter(slide-cnt);
-            counter-increment: slide-cnt;
             font-size: 5em;
             color: #fff;
         }
+        .image-1::before { content: '1'; }
+        .image-2::before { content: '2'; }
+        .image-3::before { content: '3'; }
 
 
         /* 버튼 */
@@ -92,25 +90,51 @@
         .area > .image:nth-child(3) { animation-delay: -10s; }
         
         /* 슬라이드 버튼 코드 */
-        @keyframes slide-button {
-            0%      { background-color: #fff0; }
-            20%     { background-color: #fff0; }
-            20.001% { background-color: #ffff; }
-            53.333% { background-color: #ffff; }
-            53.334% { background-color: #fff0; }
-            86.666% { background-color: #fff0; }
-            86.667% { background-color: #fff0; }
-            100%    { background-color: #fff0; }
+        @keyframes slideLabel {
+            0%          { transform: translateX(-36px); }
+            19.999%     { transform: translateX(-36px); }
+            20%         { transform: translateX(-18px); }
+            53.332%     { transform: translateX(-18px); }
+            53.333%     { transform: translateX(0);     }
+            86.665%     { transform: translateX(0);     }
+            86.666%     { transform: translateX(-36px); }
+            100%        { transform: translateX(-36px); }
         }
-        .buttons label { animation: slide-button 15s infinite; }
-        .buttons .b-slide-1 { animation-delay: -5s; }
-        .buttons .b-slide-3 { animation-delay: -10s; }
+        
+        .buttons > div { animation: slideLabel 15s infinite; }
+
+        #i-slide-1:checked ~ #slide .b-slide-1 { background-color: transparent; }
+        #i-slide-2:checked ~ #slide .b-slide-2 { background-color: transparent; }
+        #i-slide-3:checked ~ #slide .b-slide-3 { background-color: transparent; }
 
 
-        #slide .buttons > div { position: relative }
-        #i-slide-1:checked ~ #slide .buttons > div { left: calc(-18px * 2); }
-        #i-slide-2:checked ~ #slide .buttons > div { left: calc(-18px * 1); }
-         
+        #slide .area { transition: transform 0.1s; }
+        #slide .buttons { z-index: 2; }
+
+        #i-slide-1:checked ~ #slide .area:nth-child(1),
+        #i-slide-2:checked ~ #slide .area:nth-child(2),
+        #i-slide-3:checked ~ #slide .area:nth-child(3)
+        { transform: translateX(0); z-index: 1; }
+
+
+        #i-slide-1:checked ~ #slide .area:nth-child(2),
+        #i-slide-2:checked ~ #slide .area:nth-child(3), 
+        #i-slide-3:checked ~ #slide .area:nth-child(1)
+        { transform: translateX(100%); }
+
+
+        #i-slide-1:checked ~ #slide .area:nth-child(3),
+        #i-slide-2:checked ~ #slide .area:nth-child(1),
+        #i-slide-3:checked ~ #slide .area:nth-child(2)
+        { transform: translateX(-100%); z-index: -1; }
+
+        
+        
+        
+
+        
+        
+        
 
     </style>
 </head>
@@ -120,19 +144,19 @@
     <input type="radio" name="i-slide" id="i-slide-3" hidden>
     <div id="slide">
         <div class="area">
-            <div class="image"></div>
-            <div class="image"></div>
-            <div class="image"></div>
+            <div class="image image-1"></div>
+            <div class="image image-2"></div>
+            <div class="image image-3"></div>
         </div>
         <div class="area">
-            <div class="image"></div>
-            <div class="image"></div>
-            <div class="image"></div>
+            <div class="image image-2"></div>
+            <div class="image image-3"></div>
+            <div class="image image-1"></div>
         </div>
         <div class="area">
-            <div class="image"></div>
-            <div class="image"></div>
-            <div class="image"></div>
+            <div class="image image-3"></div>
+            <div class="image image-1"></div>
+            <div class="image image-2"></div>
         </div>
         <div class="buttons">
             <div>
