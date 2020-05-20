@@ -4,78 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="../../css/slide-design.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        #slide {
-            width: 600px;
-            height: 600px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .area, .image {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .area {
-            overflow: hidden;
-        }
-
-        .image-1 { background-color: #f55; }
-        .image-2 { background-color: #5f5; }
-        .image-3 { background-color: #55f; }
-
-        /* 슬라이드 개수 표시 */
-        .image::before {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 5em;
-            color: #fff;
-        }
-        .image-1::before { content: '1'; }
-        .image-2::before { content: '2'; }
-        .image-3::before { content: '3'; }
-
-
-        /* 버튼 */
-        .buttons {
-            position: absolute;
-            left: 50%;
-            bottom: 50px;
-            transform: translateX(-50%);
-            width: calc(10px * 3 + 8px * 2);
-            height: 10px;
-            overflow: hidden;
-        }
-
-        .buttons > div {
-            width: calc(10px * 5 + 8px * 4);
-            height: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-content: center;
-        }
-
-        .buttons label {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: #fff;
-            border: 1px solid #fff;
-            cursor: pointer;
-        }
-
         /* 슬라이드 코드 */
         @keyframes slide {
             0%      { left: -100%; }
@@ -101,13 +31,16 @@
             100%        { transform: translateX(-36px); }
         }
         
+        /* 라벨을 감싸는 상자는 슬라이드가 움직이는 초마다 슬라이드 처리된다 */
         .buttons > div { animation: slideLabel 15s infinite; }
 
+        /* 해당 버튼이 체크 되면 활성화 표시를 해준다 */
         #i-slide-1:checked ~ #slide .b-slide-1 { background-color: transparent; }
         #i-slide-2:checked ~ #slide .b-slide-2 { background-color: transparent; }
         #i-slide-3:checked ~ #slide .b-slide-3 { background-color: transparent; }
 
 
+        /* 버튼을 누를때마다 활성화 되는 영역이 화면 내로 들어오도록 한다 */
         #slide .area { transition: transform 0.1s; }
         #slide .buttons { z-index: 2; }
 
@@ -117,25 +50,16 @@
         { transform: translateX(0); z-index: 1; }
 
 
+        /* 보여지지 않는 숨겨진 두 영역은 위치별로 다음 슬라이드를 대비해 해당 위치에 대기한다 */
         #i-slide-1:checked ~ #slide .area:nth-child(2),
         #i-slide-2:checked ~ #slide .area:nth-child(3), 
         #i-slide-3:checked ~ #slide .area:nth-child(1)
         { transform: translateX(100%); }
 
-
         #i-slide-1:checked ~ #slide .area:nth-child(3),
         #i-slide-2:checked ~ #slide .area:nth-child(1),
         #i-slide-3:checked ~ #slide .area:nth-child(2)
         { transform: translateX(-100%); z-index: -1; }
-
-        
-        
-        
-
-        
-        
-        
-
     </style>
 </head>
 <body>
