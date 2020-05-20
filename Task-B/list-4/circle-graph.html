@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="graph" width="500" height="500"></canvas>
+
+    <script>
+        window.onload = () => {
+            const data = [
+                ["데이터 A", 50],
+                ["데이터 B", 80],
+                ["데이터 C", 120],
+                ["데이터 D", 20],
+                ["데이터 E", 100],
+            ];
+
+            const colors = ["#f88", "#ff8", "#8f8", "#8ff", "#88f"];
+
+            const canvas = document.querySelector("#graph");
+            const ctx = canvas.getContext("2d");
+            const padding = 20;
+
+            const fontSize = 15;
+            const lineHeight = 1.5;
+            
+            ctx.fonts = `${fontSize}px, 'Nanum Gothic', sans-serif`;
+            ctx.fillStyle = ctx.strokeStyle = "#333";
+
+            function drawLegend(){
+                let {width, height} = canvas;
+                let leg_padding = 10;
+
+                let max_text_width = data.map(x => ctx.measureText(x[0]).width).reduce((p, c) => Math.max(p, c));
+                let rect_height = (fontSize * lineHeight * data.length);
+
+                ctx.strokeRect(
+                    padding, 
+                    height - padding - rect_height, 
+                    max_text_width + fontSize * 1.5 + leg_padding * 2, 
+                    rect_height
+                );
+
+                data.forEach((item, i) => {
+                    const [text, cnt] = item;
+
+                    ctx.fillStyle = colors[i];
+                    ctx.fillRect(
+                        padding + leg_padding,
+                        height - padding + leg_padding - rect_height + (fontSize + lineHeight) * i + 3, // 3은 가중치.. 약간 안맞더라
+                        fontSize,
+                        fontSize
+                    )
+                    ctx.fillStyle = "#333";
+                    ctx.fillText(
+                        text, 
+                        padding + leg_padding + fontSize * 1.5,
+                        height - padding + leg_padding - rect_height + (fontSize + lineHeight) * (i + 1),
+                    );
+                });
+            }
+
+            function drawGraph(){
+            }
+
+            drawLegend();
+            drawGraph();
+        };
+    </script>
+</body>
+</html>
