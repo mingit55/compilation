@@ -64,6 +64,39 @@
             }
 
             function drawGraph(){
+                let {width, height} = canvas;
+                let circleRadius = 150;
+                let circleX = width / 2;
+                let circleY = height - (fontSize * lineHeight * data.length) - padding * 2 - circleRadius;
+
+                let totalCnt = data.reduce((p, c) => p + c[1], 0);
+                let lastAngle = 0;
+
+                data.forEach((item, i) => {
+                    let [key, cnt] = item;
+
+                    let angle = Math.PI * 2 * cnt / totalCnt;
+
+                    // 원 그래프 그리기
+                    ctx.beginPath();
+                    ctx.moveTo(circleX, circleY);
+                    ctx.arc(circleX, circleY, circleRadius, lastAngle, lastAngle + angle);
+                    ctx.fillStyle = colors[i];
+                    ctx.fill();
+
+
+                    // 원 그래프 값 그리기
+                    let angleCenter = lastAngle + angle / 2;
+                    let x = Math.cos(angleCenter) * circleRadius * 1.1;
+                    let y = Math.sin(angleCenter) * circleRadius * 1.1;
+                    
+                    let mt = ctx.measureText(cnt);
+                    let width = mt.width;
+                    ctx.fillStyle = "#333";
+                    ctx.fillText(cnt, circleX + x - width / 2, circleY + y);
+
+                    lastAngle += angle;
+                });
             }
 
             drawLegend();
