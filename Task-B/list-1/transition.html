@@ -16,16 +16,6 @@
             <div class="image image-2"></div>
             <div class="image image-3"></div>
         </div>
-        <div class="area">
-            <div class="image image-2"></div>
-            <div class="image image-3"></div>
-            <div class="image image-1"></div>
-        </div>
-        <div class="area">
-            <div class="image image-3"></div>
-            <div class="image image-1"></div>
-            <div class="image image-2"></div>
-        </div>
         <div class="buttons">
             <div>
                 <label class="b-slide-2" for="i-slide-2"></label>
@@ -36,5 +26,104 @@
             </div>
         </div>
     </div>
+    <script>
+        window.onload = () => {
+            const t_delay = 3;
+            const t_movement = 2;
+            let interval_id;
+            let images = document.querySelectorAll("#slide .image");
+            let buttons = document.querySelectorAll("#slide .buttons label:nth-child(n+3)");
+            let sno = 0;
+
+            buttons[sno].classList.add("active");
+
+            function slideImage(){
+                buttons.forEach(btn => btn.classList.remove("active"));
+
+                let hideItem = images[sno];
+                hideItem.style.transition = "none";
+                hideItem.style.left = "0";
+                clearTimeout(hideItem.callback);
+                hideItem.callback = setTimeout(() => {
+                    hideItem.animated = true;
+                    hideItem.style.transition = `left ${t_movement}s`;
+                    hideItem.style.left = "100%";
+                    clearTimeout(hideItem.callback);
+                    hideItem.callback = setTimeout(() => {
+                        hideItem.animated = false;
+                        hideItem.style.transition = "none";
+                        hideItem.style.left = "-100%";
+                    }, t_movement * 1000);
+                });
+
+                sno = sno + 1 >= images.length ? 0 : sno + 1;
+
+                let showItem = images[sno];
+                showItem.style.transition = "none";
+                showItem.style.left = "-100%";
+                showItem.animated = true;
+                clearTimeout(showItem.callback);
+                showItem.callback = setTimeout(() => {
+                    showItem.style.transition = `left ${t_movement}s`;
+                    showItem.style.left = "0";
+                        setTimeout(() => {
+                            showItem.animated = false;
+                        }, t_movement * 1000);
+                });
+
+                buttons[sno].classList.add("active");
+            }
+
+            interval_id = setInterval(slideImage, (t_delay + t_movement) * 1000);
+
+            buttons.forEach((btn, i) => {
+                btn.addEventListener("click", () => {
+                    console.log(images[sno].animated, images[i].animated);
+                    if(images[sno].animated || images[i].animated) {
+                        return;
+                    }
+
+                    buttons.forEach(btn => btn.classList.remove("active"));
+                    clearInterval(interval_id);
+
+                    let hideItem = images[sno];
+                    hideItem.style.transition = "none";
+                    hideItem.style.left = "0";
+                    clearTimeout(hideItem.callback);
+                    hideItem.callback = setTimeout(() => {
+                        hideItem.animated = true;
+                        hideItem.style.transition = `left ${t_movement}s`;
+                        hideItem.style.left = "100%";
+                        clearTimeout(hideItem.callback);
+                        hideItem.callback = setTimeout(() => {
+                            hideItem.animated = false;
+                            hideItem.style.transition = "none";
+                            hideItem.style.left = "-100%";
+                        }, t_movement * 1000);
+                    });
+
+                    sno = i;
+
+                    let showItem = images[i];
+                    showItem.style.transition = "none";
+                    showItem.style.left = "-100%";
+                    showItem.animated = true;
+                    clearTimeout(showItem.callback);
+                    showItem.callback = setTimeout(() => {
+                        showItem.style.transition = `left ${t_movement}s`;
+                        showItem.style.left = "0";
+                        setTimeout(() => {
+                            showItem.animated = false;
+                        }, t_movement * 1000);
+                    });
+
+                    buttons[sno].classList.add("active");
+
+                    interval_id = setInterval(slideImage, (t_movement + t_delay) * 1000);
+                });
+            });
+        };
+
+    </script>
 </body>
 </html>

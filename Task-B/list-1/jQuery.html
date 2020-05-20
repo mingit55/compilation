@@ -8,24 +8,11 @@
     <script src="../../js/jquery-3.5.1.min.js"></script>
 </head>
 <body>
-    <input type="radio" name="i-slide" id="i-slide-1" hidden checked>
-    <input type="radio" name="i-slide" id="i-slide-2" hidden>
-    <input type="radio" name="i-slide" id="i-slide-3" hidden>
     <div id="slide">
         <div class="area">
             <div class="image image-1"></div>
             <div class="image image-2"></div>
             <div class="image image-3"></div>
-        </div>
-        <div class="area">
-            <div class="image image-2"></div>
-            <div class="image image-3"></div>
-            <div class="image image-1"></div>
-        </div>
-        <div class="area">
-            <div class="image image-3"></div>
-            <div class="image image-1"></div>
-            <div class="image image-2"></div>
         </div>
         <div class="buttons">
             <div>
@@ -37,5 +24,55 @@
             </div>
         </div>
     </div>
+    <script>
+        $(function(){
+            const t_delay = 3000;
+            const t_movement = 2000;
+            let interval_id;
+            let $images = $("#slide .image");
+            let $buttons = $("#slide .buttons label:nth-child(n+3)"); // CSS 슬라이드에서 쓰던 라벨을 가져와서… 앞 2개를 제외하고 가져온다.
+            let sno = 0;
+
+            $buttons.eq(sno).addClass("active");
+
+            function slideImage(){
+                $buttons.removeClass("active");
+                $images.eq(sno).clearQueue().animate({ left: "100%" }, t_movement, function(){
+                        $(this).css("left", "-100%");
+                    }
+                );
+                sno = sno + 1 >= $images.length ? 0 : sno + 1;
+                $images.eq(sno).clearQueue().animate({ left: "0" }, t_movement);
+                $buttons.eq(sno).addClass("active");
+            }
+
+            interval_id = setInterval(slideImage, t_delay + t_movement);
+
+            // 버튼 이벤트
+            $buttons.each(function(i){
+                $(this).on("click", e => {
+                    if($images.eq(i).is(":animated") || $images.eq(sno).is(":animated")){
+                        return;
+                    }
+                    
+                    $images.eq(i).css("left", "-100%");
+
+                    $images.clearQueue();
+                    $buttons.removeClass("active");
+                    clearInterval(interval_id);
+
+                    $images.eq(sno).clearQueue().animate({ left: "100%" }, t_movement, function(){
+                            $(this).css("left", "-100%");
+                        }
+                    );
+                    sno = i;
+                    $images.eq(sno).clearQueue().animate({ left: "0" }, t_movement);
+                    $buttons.eq(sno).addClass("active");
+
+                    interval_id = setInterval(slideImage, t_delay + t_movement);
+                });
+            });
+        });
+    </script>
 </body>
 </html>
