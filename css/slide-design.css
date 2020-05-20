@@ -24,8 +24,8 @@
 }
 
 .image-1 { background-color: #f55; }
-.image-2 { background-color: #5f5; }
-.image-3 { background-color: #55f; }
+.image-2 { background-color: #5f5; left: -100%; }
+.image-3 { background-color: #55f; left: -100%; }
 
 /* 슬라이드 개수 표시 */
 .image::before {
@@ -53,6 +53,7 @@
 }
 
 .buttons > div {
+    transform: translateX(-36px);
     width: calc(10px * 5 + 8px * 4);
     height: 10px;
     display: flex;
