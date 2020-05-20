@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #drop-area {
+            display: block;
+            width: 300px;
+            height: 300px;
+            background-color: #555;
+            position: relative;
+            text-align: center;
+            line-height: 300px;
+            color: #fff;
+            font-size: 1.1em;
+            padding: 20px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        #drop-area::before {
+            content: "파일을 끌어다 놓으세요";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            line-height: 300px;
+            background-color: #333;
+            color: #fff;
+            font-size: 1.1em;
+            white-space: nowrap;
+            
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        #drop-area.hover::before { opacity: 1; transition: opacity 0.2s; }
+    </style>
+</head>
+<body>
+    <form id="form" action="/test-server.php" method="post" enctype="multipart/form-data">
+        <input type="file" id="i-file" name="input" multiple >
+        <label id="drop-area" for="i-file">입력된 파일이 없습니다.</label>
+        <button type="submit">Submit</button>
+    </form>
+    
+    <script>
+        window.onload = () => {
+            let formData = new FormData();
+
+
+            // Drop Area
+            let dropArea = document.querySelector("#drop-area");
+            function update(){
+                let input = formData.getAll("input[]");
+                if(!input || input.length === 0){
+                    dropArea.innerText = "입력된 파일이 없습니다.";
+                } else if(input.length === 1) {
+                    dropArea.innerText = input[0].name;
+                } else {
+                    dropArea.innerText = `${input[0].name} 외 ${input.length - 1}개`;
+                }
+            }
+
+            dropArea.addEventListener("dragover", e => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropArea.classList.add("hover");
+            });
+
+            dropArea.addEventListener("dragleave", e => {
+                dropArea.classList.remove("hover");
+            });
+
+            dropArea.addEventListener("drop", e => {
+                e.preventDefault();
+                dropArea.classList.remove("hover");
+
+                let files = e.dataTransfer.files;
+                for(let i = 0; i < files.length; i++){
+                    let file = files[i];
+                    formData.append("input[]", file, file.name);
+                }
+                update();
+            });
+
+            // Input
+
+            let input = document.querySelector("#i-file");
+            input.addEventListener("change", e => {
+                let files = e.target.files;
+                for(let i = 0; i < files.length; i++){
+                    let file = files[i];
+                    formData.append("input[]", file, file.name);
+                }
+                update();
+            });
+
+            // Form
+
+            let form = document.querySelector("#form");
+            form.addEventListener("submit", e => {
+                e.preventDefault();
+                
+                fetch("/test-server.php", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(res => res.text())
+                .then(res => {
+                    console.log(res);
+                });
+            });
+        };
+    </script>
+</body>
+</html>
