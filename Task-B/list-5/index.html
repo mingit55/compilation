@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>    
+    /**
+        * DB 선언하기
+        
+        indexedDB.open(<(string) DB명>, <(number) DB버전>) :: (request) request 객체
+
+        위 함수를 사용해서 먼저 request 객체를 걸어야한다. 
+
+        브라우저에 해당 이름의 indexedDB가 있는지 체크하는 것이다.
+
+        브라우저는 원하는 버전이 가지고 있는 버전보다 높거나 DB가 없을 경우
+        
+        request 객체에게 'upgradeneeded' 이벤트를 발생시켜 DB를 재구성한다.
+
+        만약 요청이 완료되었으면 'success' 이벤트를 발생시키는데, 요청이 완료되면
+        
+        request 객체의 result 속성 안에 연결된 DB가 저장된다.
+
+        
+        * 스토어 생성하기  
+
+        스토어는 'upgradeneeded' 이벤트에서 DB의 메소드인 'createObjectStore'를 사용하여 만들 수 있다. 
+        
+        이 때 두번째 파라메터에 '{keyPath: "id", autoIncrement: true}' 를 입력하면 
+        
+        해당 스토어에 오브젝트를 삽입할 때 id라는 속성으로 autoIncrement가 적용된다.
+    */
+
+    let db = null;
+    function getDB(){
+        return new Promise(resolve => {
+            if (db == null) {
+                let req = indexedDB.open("myDB", 1);
+                req.onupgradeneeded = () => {
+                    let db = req.result;
+                    db.createObjectStore("users", {keyPath: "id", autoIncrement: true})
+                };
+                req.onsuccess = () => {
+                    db = req.result;
+                    resolve(db);
+                };
+            } else resolve(db);
+        });
+    }
+
+    /*
+        * 트랙젝션 가져오기
+
+        indexedDB는 트랜젝션 단위로 명령이 실행된다. 
+        
+        따라서 어떤 명령을 수행하든 트랜젝션을 가져와서 실행해야 한다.
+
+        트랜젝션은 DB의 메소드인 'transtion'으로 가져올 수 있다.
+
+        파라메터는 다음과 같다.
+
+        transaction((string | array) 가져올 스토어명 혹은 스토어명이 담긴 배열, (string) readonly 혹은 readwrite )
+
+        두번째 파라메터에는 연결할 스토어에 적용할 잠금을 말한다. 동시에 스토어를 수정할 경우 문제가 발생할 수 있기 때문에 이런 것이 존재한다.
+
+        함수의 반환값은 transaction 객체이다.
+
+
+        * 스토어 가져오기
+
+        스토어는 transaction 객체의 'objectStore' 메소드로 가져올 수 있다. 간단하게 파라메터에 스토어명만 적으면 된다.
+
+        다만, transaction 객체를 생성할 때 해당 스토어를 미리 사용하겠다고 선언했었어야 한다.
+
+    */
+
+    getDB().then(db => {
+        let transaction = db.transaction("users", "readwrite")
+        let objectStore = transaction.objectStore("users");
+    });
+
+    /*
+        * 데이터 CRUD
+
+        위 과정을 모두 거쳤으면, 이젠 objectStore의 메소드를 통해 값을 갖고 놀면 된다.
+
+        objectStore의 메소드는 여러가지인데, CRUD를 위한 것은 다음과 같다.
+
+        - get
+        - getAll
+        - add
+        - delete
+        - put
+
+        get 같은 경우에는 objectStore를 생성할 때 만들었던 keyPath 값을 통해 오브젝트를 가져올 수 있다.
+        
+        다만, indexeddb.open을 사용했을 때처럼 request 객체가 생성되어 'success' 이벤트가 발생한 후
+
+        request.result를 통해서 참조할 수 있으니 주의하도록 하자.
+    */
+
+    getDB().then(db => new Promise(res => {
+        let transaction = db.transaction("users", "readwrite")
+        let objectStore = transaction.objectStore("users");
+        
+        // add
+        let req = objectStore.add({id: 1, name: "유저일", user_id: "user1"});
+        req.onsuccess = () => {
+            res(objectStore);
+        };
+    })).then(objectStore => new Promise(res => {
+        // get
+        let req = objectStore.get(1);
+        req.onsuccess = () => {
+            res([objectStore, req.result]);
+        };
+    })).then(([objectStore, item]) => new Promise(res => {
+        // put
+        item.name = "유저이";
+        let req = objectStore.put(item);
+        req.onsuccess = () => res([objectStore, item]);
+        
+    })).then(([objectStore, item]) => {
+        // delete
+        objectStore.delete(item.id);
+    });
+
+
+    // 밑은 19년 충남과제 때 제작한 DB 클래스이다. 혹시 위의 설명을 듣고 모르겠으면 참고하길 바란다.
+
+    class Database {
+        dbname;
+        version;
+        root;
+        stores;
+        constructor({dbname, version = 1, stores = []} = {}){
+            this.dbname = dbname;
+            this.version = version;
+            this.stores = stores;
+        }
+
+        getRoot(){
+            return new Promise(res => {
+                if(!this.root){
+                    this.request = indexedDB.open(this.dbname, this.version);
+                    this.request.onupgradeneeded = () => {
+                        let db = this.request.result;
+
+                        this.stores.forEach(store => {
+                            db.createObjectStore(store, {keyPath: "id", autoIncrement: true});
+                        });
+                    }
+                    this.request.onsuccess = () => {
+                        this.root = this.request.result;
+                        res(this.root);
+                    };
+                }
+                else res(this.root);
+            });
+        }
+
+        add(table, data){
+            return new Promise(resolve => {
+                this.getRoot().then(root => {
+                    let os = root.transaction(table, "readwrite").objectStore(table);
+                    let req = os.add(data);
+                    req.onsuccess = () => {
+                        resolve( req.result );
+                    }
+                });
+            });
+        }
+
+        put(table, data){
+            return getRoot().then(root => {
+                let os = root.transaction(table, "readwrite").objectStore(table);
+                os.put(data);
+            });
+        }
+
+        remove(table, id){
+            return getRoot().then(root => {
+                let os = root.transaction(table, "readwrite").objectStore(table);
+                os.delete(id);
+            });
+        }
+
+        get(table, id){
+            return new Promise(res => {
+                this.getRoot().then(root => {
+                    let os = root.transaction(table, "readwrite").objectStore(table);
+                    let req = os.get(id);
+                    req.onsuccess = () => res( req.result );
+                });
+            });
+        }
+
+        getAll(table){
+            return new Promise(res => {
+                let os = this.root.transaction(table, "readwrite").objectStore(table);
+                let req = os.getAll();
+                req.onsuccess = () => res( req.result );
+            });
+        }
+    }
+
+    window.onload = () => {
+        let db = new Database({
+            dbname: "test",
+            version: 1,
+            stores: ["users", "articles"]
+        });
+
+    }
+    </script>
+</body>
+</html>
