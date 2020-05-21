@@ -9,6 +9,14 @@
     1. Text Overflow - Ellipsis
     2. CSS만으로 슬라이드 만들기
     3. 디자인 템플릿
+       1. [2019년 전국 출제문제 - 대구 (try 1)](https://mingit55.github.io/2019-Daegu-A1/)
+       2. [2019년 전국 출제문제 - 강원 (try 3)](https://mingit55.github.io/2019-Gangwon-A3/)
+       3. [2019년 전국 출제문제 - 경북 (try 5)](https://mingit55.github.io/2019-national-A5/)
+       4. [윤지윤 쌤 디자인과제 - 에듀온넷](https://mingit55.github.io/2020-03-14-Design/)
+       5. [윤지윤 쌤 디자인과제 - 경북 (try 7)](https://mingit55.github.io/2019-national-A7/)
+       6. [2019년 전국 출제문제 - 경남 (try 1)](https://mingit55.github.io/2019-GyeongNam-B1/)
+       7. [2019년 전국 출제문제 - 인천 (try 1)](https://mingit55.github.io/2019-Incheon-A1/)
+       8. 
 
 * **B과제**
     1. 슬라이드 제작 종류별로
