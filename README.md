@@ -16,7 +16,6 @@
        5. [윤지윤 쌤 디자인과제 - 경북 (try 7)](https://mingit55.github.io/2019-national-A7/)
        6. [2019년 전국 출제문제 - 경남 (try 1)](https://mingit55.github.io/2019-GyeongNam-B1/)
        7. [2019년 전국 출제문제 - 인천 (try 1)](https://mingit55.github.io/2019-Incheon-A1/)
-       8. 
 
 * **B과제**
     1. 슬라이드 제작 종류별로
